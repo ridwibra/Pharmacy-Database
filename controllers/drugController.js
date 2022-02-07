@@ -4,17 +4,45 @@ const Drug = require('../models/drugModel')
 
 //show the list of drugs
 const index = (req, res, next) => {
-    Drug.find()
-    .then(response => {
-        res.json({
-            response
+    if(req.query.page && req.query.limit){
+        Drug.paginate({}, {page: req.query.page, limit: req.query.limit})
+        .then(response => {
+            res.json({
+                response
+            })
         })
+        .catch(error => {
+            res.json({
+                message: 'An error occured'+error
+            })
+        })
+    }else{
+        Drug.find()
+         .then(response => {
+           res.json({
+            response
+           })
     })
     .catch(error => {
-        res.json({
-            message: 'An error occured!'
+        res.status(400).json({
+            error
         })
     })
+
+    }
+    
+
+    // Drug.find()
+    // .then(response => {
+    //     res.json({
+    //         response
+    //     })
+    // })
+    // .catch(error => {
+    //     res.json({
+    //         message: 'An error occured!'
+    //     })
+    // })
 }
 
 const show = (req, res, next)=>{
@@ -42,6 +70,17 @@ const store = (req, res, next) => {
         expiry: req.body.expiry,
         price: req.body.price
     })
+    // if(req.file){
+    //     drug.avatar = req.file.path
+    // }
+    if(req.files){
+        let path = ''
+        req.files.forEach(function(files, index, arr){
+            path = path + files.path + ','
+        })
+        path = path.substring(0, path.lastIndexOf(","))
+        drug.avatar = path
+    }
     drug.save()
     .then(response => {
         res.json({
@@ -57,7 +96,7 @@ const store = (req, res, next) => {
 
 //update a drug
 const update = (req, res, next) => {
-    let drugID = req.body.drugID
+    let drugID = req.body?.drugID
 
     let updatedData = {
         name: req.body.name,

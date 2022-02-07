@@ -2,6 +2,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const mongoosePaginate = require('mongoose-paginate-v2')
 const drugSchema = new Schema({
     name: {
         type: String
@@ -20,8 +21,13 @@ const drugSchema = new Schema({
     },
     price: {
         type: Number
+    },
+    avatar: {
+        type: String
     }
 }, {timestamps: true})
+
+drugSchema.plugin(mongoosePaginate)
 
 const Drug = mongoose.model('Drug', drugSchema)
 module.exports = Drug 
